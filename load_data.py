@@ -141,7 +141,7 @@ class BaseData(data.Dataset):
             mask = self.load_mask(mask_name, aug_index=aug_index)
             return_res = [1,1,1,1]
         
-        # Removal
+        # Inpainting
         elif cls == 2:
             mask_name = image_name.replace('/fake/', '/mask/').replace('.png', '.jpg')
             mask = self.load_mask(mask_name, aug_index=aug_index)
@@ -180,7 +180,7 @@ class BaseData(data.Dataset):
             return_cls = 0
         elif 'splice' in image_name:
             return_cls = 1
-        elif 'Removal' in image_name:
+        elif 'Inpainting' in image_name:
             return_cls = 2
         elif 'CopyMove' in image_name:
             return_cls = 3
@@ -230,10 +230,10 @@ class TrainData(BaseData):
     def _img_list_retrieve(self):
         authentic_names = self.img_retrieve('authentic.txt', 'authentic')
         splice_rank_names     = self.img_retrieve('splice_randmask.txt', 'splice_randmask/fake', False)
-        Removal_names = self.img_retrieve('Removal.txt', 'Removal/fake', False)
+        Inpainting_names = self.img_retrieve('Inpainting.txt', 'Inpainting/fake', False)
         copy_move_names   = self.img_retrieve('copy_move.txt', 'CopyMove', False)
         splice_name = self.img_retrieve('splice.txt', 'splice', False)
-        return [authentic_names, splice_rank_names, Removal_names, copy_move_names, splice_name]
+        return [authentic_names, splice_rank_names, Inpainting_names, copy_move_names, splice_name]
 
 class ValData(BaseData):
     def __init__(self, args):
@@ -272,6 +272,6 @@ class ValData(BaseData):
     def _img_list_retrieve(self):
         splice_rank_names = self.img_retrieve('splice_randmask.txt', 'splice_randmask/fake', False)
         splice_name = self.img_retrieve('splice.txt', 'splice', False)
-        Removal_names = self.img_retrieve('Removal.txt', 'Removal/fake', False)
+        Inpainting_names = self.img_retrieve('Inpainting.txt', 'Inpainting/fake', False)
         copy_move_names = self.img_retrieve('copy_move.txt', 'CopyMove', False)
-        return [splice_rank_names, splice_name, Removal_names, copy_move_names]
+        return [splice_rank_names, splice_name, Inpainting_names, copy_move_names]
