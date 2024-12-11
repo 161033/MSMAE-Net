@@ -58,6 +58,29 @@ class BasicBlock(nn.Module):
 
         return out
 
+class BasicBlock1(nn.Module):
+
+    def __init__(self, inplanes, planes, stride=1, downsample=None):
+        super(BasicBlock, self).__init__()
+        self.conv1 = conv3x3(inplanes, planes, stride)
+        self.bn1 = nn.BatchNorm2d(planes, momentum=BN_MOMENTUM)
+        self.relu = nn.ReLU(inplace=False)
+        self.conv2 = conv3x3(planes, planes)
+        self.bn2 = nn.BatchNorm2d(planes, momentum=BN_MOMENTUM)
+        self.downsample = downsample
+        self.stride = stride
+
+    def forward(self, x):
+        
+        out = self.conv1(x)
+        out = self.bn1(out)
+        out = self.relu(out)
+        out = self.conv2(out)
+        out = self.bn2(out)
+        out = self.relu(out)
+
+        return out
+
 
 class BasicBlock2(nn.Module):
     expansion = 1
@@ -80,8 +103,8 @@ class BasicBlock2(nn.Module):
         out = self.bn1(out)
         out = self.relu(out)
 
-        residual = self.conv2(residual)
-        residual = self.bn2(residual)
+        out = self.conv2(out)
+        out = self.bn2(out)
 
         if self.downsample is not None:
             residual = self.downsample(x)
@@ -354,13 +377,13 @@ class RCASSP(nn.Module):
         x1 = self.aspp1(x)
         x1conv = self.aspp1conv(x1)
 
-        x2 = self.aspp2(torch.add(0.5 * x1conv, 0.5 * x))
+        x2 = self.aspp2(torch.add(x1conv,  x))
         x2conv = self.aspp2conv(x2)
 
-        x3 = self.aspp3(torch.add(0.5 * x2conv, 0.5 * x))
+        x3 = self.aspp3(torch.add(x2conv,  x))
         x3conv = self.aspp3conv(x3)
 
-        x4 = self.aspp4(torch.add(0.5*x3conv, 0.5*x))
+        x4 = self.aspp4(torch.add(x3conv, x))
 
         x5 = F.interpolate(self.avg_pool(x), size=(x.size(2), x.size(3)), mode='bilinear', align_corners=True)
         #torch.size(10,64,256,256)
@@ -462,7 +485,7 @@ class HighResolutionNet(nn.Module):
         self.conv1fre = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
         self.bn1fre = nn.BatchNorm2d(64, momentum=BN_MOMENTUM)
         self.laplacian = LaPlacianMs(in_c=64, gauss_ker_size=3, scale=[2, 4, 8])
-        self.basic_block = BasicBlock(64,64,1)
+        self.basic_block1 = BasicBlock1(64,64,1)
         self.RCASPP = RCASSP(64,16)
         self.last3x3Conv = nn.Conv2d(64,18,3,1,1)
         self.last3x3bn = nn.BatchNorm2d(18,momentum=BN_MOMENTUM)
@@ -617,7 +640,7 @@ class HighResolutionNet(nn.Module):
         x_fre = self.conv1fre(x)
         x_fre = self.bn1fre(x_fre)
         x_fre = self.laplacian(x_fre)
-        x_fre = self.basic_block(x_fre)
+        x_fre = self.basic_block1(x_fre)
         x_fre_init = x_fre
         x_fre = self.RCASPP(x_fre)
         x_fre = self.last3x3Conv(x_fre)
