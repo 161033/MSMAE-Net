@@ -365,7 +365,7 @@ class RCASSP(nn.Module):
         self.dropout = nn.Dropout(0.5)
 
         self.last_layer_conv = nn.Sequential(
-            nn.Conv2d(128, 64, 1, 1, 0),
+            nn.Conv2d(128, 64, 3, 1, 0),
             nn.BatchNorm2d(64, momentum=BN_MOMENTUM),
             nn.ReLU(inplace=False)
         )
