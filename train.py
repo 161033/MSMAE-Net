@@ -183,8 +183,6 @@ def Inference(
                     F1_lst.append(F1)
                     AUC_score = auc_a if auc_a > 0.5 else 1-auc_a
                     auc_lst.append(AUC_score)
-                if step == 180:
-                    break
 
         FENet.train()
         SegNet.train()
@@ -312,15 +310,15 @@ if __name__ == "__main__":
     parser.add_argument('-lr', '--learning_rate', type=float, default=1e-4)
     parser.add_argument('--num_epochs', type=int, default=25)
     parser.add_argument('--lr_backbone', type=float, default=0.9)
-    parser.add_argument('--patience', type=int, default=55)
+    parser.add_argument('--patience', type=int, default=70)
     parser.add_argument('--step_factor', type=float, default=0.95)
     parser.add_argument('--dis_step', type=int, default=50)
     parser.add_argument('--val_step', type=int, default=500)
-    parser.add_argument('--Inf_step', type=int, default=2000)
+    parser.add_argument('--Inf_step', type=int, default=1000)
     parser.add_argument('--train_bs', type=int, default=12)
     parser.add_argument('--val_bs', type=int, default=12)
     parser.add_argument('--val_num', type=int, default=15000)
-    parser.add_argument('--train_num', type=int, default=135000)
+    parser.add_argument('--train_num', type=int, default=150000)
     parser.add_argument('--ablation', type=str, default='local', choices=['base', 'fg', 'local', 'full'])
     parser.add_argument('--path', type=str, default="", help='deprecated')
     parser.add_argument('--loss_type', type=str, default='B', choices=['B', 'D'])
