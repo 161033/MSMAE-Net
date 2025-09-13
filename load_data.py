@@ -44,10 +44,6 @@ class BaseData(data.Dataset):
         if image.shape[-1] == 4:
             image = self.rgba2rgb(image)
         image = self._resize_func(image)
-
-        aug_index = randrange(0, 8)
-        image = self.data_aug(image, aug_index)
-
         image = image.astype(np.float32) / 255.
         image = torch.from_numpy(image)
         return image.permute(2, 0, 1)
@@ -168,10 +164,6 @@ class BaseData(data.Dataset):
                 mask = mask.astype(np.float32)
             else:
                 mask = np.ones(self.crop_size)
-
-        aug_index = randrange(0, 8)
-
-        mask = self.data_aug(mask, aug_index)
         mask = self.generate_4masks(mask)
         return mask
 
